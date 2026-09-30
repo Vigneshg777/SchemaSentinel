@@ -1,0 +1,63 @@
+<div class="analyzer">
+  <header class="intro">
+    <h1>Migration Risk Analyzer</h1>
+    <p>
+      Paste a SQL Server migration script to identify potentially dangerous schema, data and
+      dependency changes before you deploy. Submitted scripts are analyzed but
+      <strong>never executed</strong>.
+    </p>
+  </header>
+
+  <div class="samples">
+    <span class="samples-label">Sample migrations</span>
+    <div class="sample-chips">
+      @for (sample of samples; track sample.label) {
+        <button type="button" class="chip" [title]="sample.description" (click)="loadSample(sample)">
+          {{ sample.label }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <form class="editor-card" [formGroup]="form" (ngSubmit)="analyze()">
+    <div class="editor-head">
+      <input
+        class="script-name"
+        type="text"
+        formControlName="scriptName"
+        aria-label="Script name"
+        placeholder="migration.sql"
+      />
+    </div>
+
+    <textarea
+      class="editor"
+      formControlName="script"
+      spellcheck="false"
+      placeholder="-- Paste your SQL Server migration here&#10;ALTER TABLE Customers ALTER COLUMN Email VARCHAR(50) NOT NULL;"
+    ></textarea>
+
+    @if (form.controls.script.touched && form.controls.script.invalid) {
+      <p class="field-error">A migration script is required.</p>
+    }
+
+    <div class="actions">
+      <button type="submit" class="btn primary" [disabled]="loading()">
+        @if (loading()) {
+          <span class="spinner"></span> Analyzing…
+        } @else {
+          Analyze Migration
+        }
+      </button>
+      <button type="button" class="btn ghost" (click)="clear()" [disabled]="loading()">Clear</button>
+    </div>
+  </form>
+
+  @if (error()) {
+    <div class="alert error" role="alert">{{ error() }}</div>
+  }
+
+  @if (result(); as r) {
+    <app-analysis-report [result]="r" />
+  }
+</div>

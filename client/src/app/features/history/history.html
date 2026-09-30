@@ -1,0 +1,40 @@
+<div class="history">
+  <header class="intro">
+    <h1>Analysis History</h1>
+    <p>Recent migration analyses saved to SchemaSentinelDb. Select one to view the full report.</p>
+  </header>
+
+  @if (loading()) {
+    <p class="muted">Loading history…</p>
+  } @else if (error()) {
+    <div class="alert error">{{ error() }}</div>
+  } @else if (items().length === 0) {
+    <div class="empty-card">
+      <p>No analyses yet.</p>
+      <a routerLink="/" class="btn primary">Analyze a migration</a>
+    </div>
+  } @else {
+    <ul class="list">
+      @for (item of items(); track item.id) {
+        <li>
+          <a class="row" [routerLink]="['/history', item.id]">
+            <app-severity-badge [severity]="item.overallSeverity" />
+            <div class="main">
+              <span class="name">{{ item.scriptName }}</span>
+              <span class="summary">{{ item.summary }}</span>
+            </div>
+            <span class="date">{{ item.createdAt | date: 'medium' }}</span>
+            <button
+              type="button"
+              class="delete"
+              title="Delete analysis"
+              (click)="remove($event, item.id)"
+            >
+              ✕
+            </button>
+          </a>
+        </li>
+      }
+    </ul>
+  }
+</div>

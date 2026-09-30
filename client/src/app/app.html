@@ -1,0 +1,23 @@
+<div class="app-shell">
+  <header class="topbar">
+    <a class="brand" routerLink="/">
+      <img class="logo" src="favicon.svg" alt="SchemaSentinel logo" width="28" height="28" />
+      <span class="brand-text">
+        <strong>SchemaSentinel</strong>
+        <small>SQL Server Migration Risk Analyzer</small>
+      </span>
+    </a>
+    <nav class="nav">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Analyzer</a>
+      <a routerLink="/history" routerLinkActive="active">History</a>
+    </nav>
+  </header>
+
+  <main class="content">
+    <router-outlet />
+  </main>
+
+  <footer class="footer">
+    <span>Submitted migration scripts are analyzed but <strong>never executed</strong>.</span>
+  </footer>
+</div>

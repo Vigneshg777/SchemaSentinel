@@ -1,0 +1,99 @@
+@let r = result();
+
+<section class="report">
+  <div class="overall-card" [class]="'ring-' + r.overallSeverity.toLowerCase()">
+    <div class="overall-head">
+      <div>
+        <p class="eyebrow">Overall Risk</p>
+        <app-severity-badge [severity]="r.overallSeverity" />
+      </div>
+      <div class="meta">
+        <span>{{ r.scriptName }}</span>
+        <span>{{ r.createdAt | date: 'medium' }}</span>
+      </div>
+    </div>
+    <p class="summary">{{ r.summary }}</p>
+  </div>
+
+  <div class="grid">
+    <div class="panel db-context">
+      <h3>Database Context</h3>
+      @if (r.databaseContext.databaseChecked) {
+        <p class="context-line ok">
+          <span class="tag">Database context available</span>
+          Target Database: <strong>{{ r.databaseContext.databaseName }}</strong>
+        </p>
+        <ul class="stats">
+          <li><span>Objects checked</span><strong>{{ r.databaseContext.objectsFound + r.databaseContext.objectsNotFound }}</strong></li>
+          <li><span>Objects found</span><strong>{{ r.databaseContext.objectsFound }}</strong></li>
+          <li><span>Objects not found</span><strong>{{ r.databaseContext.objectsNotFound }}</strong></li>
+        </ul>
+      } @else {
+        <p class="context-line warn">
+          <span class="tag muted">Static analysis only</span>
+          The target database was not available, so only the SQL was analyzed.
+        </p>
+      }
+    </div>
+
+    <div class="panel affected">
+      <h3>Affected Objects</h3>
+      @if (r.affectedObjects.length) {
+        <ul class="objects">
+          @for (obj of r.affectedObjects; track obj.name) {
+            <li>
+              <span class="obj-name">{{ obj.name }}</span>
+              <span class="obj-type">{{ obj.objectType }}</span>
+              @if (obj.existsInDatabase) {
+                <span class="pill found">In database</span>
+              } @else if (r.databaseContext.databaseChecked) {
+                <span class="pill missing">Not found</span>
+              }
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="empty">No database objects were referenced.</p>
+      }
+    </div>
+  </div>
+
+  <div class="panel findings">
+    <h3>Findings <span class="count">{{ r.findings.length }}</span></h3>
+    @if (r.findings.length) {
+      <ul class="finding-list">
+        @for (f of r.findings; track f.id) {
+          <li class="finding" [class]="'left-' + f.severity.toLowerCase()">
+            <div class="finding-head">
+              <app-severity-badge [severity]="f.severity" />
+              <span class="title">{{ f.title }}</span>
+              <span class="category">{{ f.category }}</span>
+            </div>
+            <p class="desc">{{ f.description }}</p>
+            @if (f.affectedObject) {
+              <p class="line"><span class="k">Affected object</span>{{ f.affectedObject }}</p>
+            }
+            @if (f.evidence) {
+              <pre class="evidence">{{ f.evidence }}</pre>
+            }
+            @if (f.recommendation) {
+              <p class="line rec"><span class="k">Recommendation</span>{{ f.recommendation }}</p>
+            }
+            <p class="source">Source: {{ sourceLabel(f) }}</p>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="empty">No risky operations were detected.</p>
+    }
+  </div>
+
+  <div class="panel recommendations">
+    <h3>Recommendations</h3>
+    <ul class="rec-list">
+      @for (rec of r.recommendations; track rec) {
+        <li>{{ rec }}</li>
+      }
+    </ul>
+  </div>
+</section>

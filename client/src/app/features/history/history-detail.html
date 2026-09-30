@@ -1,0 +1,11 @@
+<div class="detail">
+  <a routerLink="/history" class="back">← Back to history</a>
+
+  @if (loading()) {
+    <p class="muted">Loading analysis…</p>
+  } @else if (error()) {
+    <div class="alert error">{{ error() }}</div>
+  } @else if (result(); as r) {
+    <app-analysis-report [result]="r" />
+  }
+</div>

@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/tests/">
+    <Project Path="tests/SchemaSentinel.Tests/SchemaSentinel.Tests.csproj" />
+  </Folder>
+  <Project Path="server/server.csproj" />
+</Solution>

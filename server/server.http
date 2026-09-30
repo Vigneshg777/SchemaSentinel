@@ -1,0 +1,25 @@
+@server_HostAddress = http://localhost:5083
+
+### Analyze a migration (database-aware demo)
+POST {{server_HostAddress}}/api/analysis
+Content-Type: application/json
+
+{
+  "script": "ALTER TABLE Customers ALTER COLUMN Email VARCHAR(50) NOT NULL;",
+  "scriptName": "narrow.sql"
+}
+
+### Analyze a destructive migration
+POST {{server_HostAddress}}/api/analysis
+Content-Type: application/json
+
+{
+  "script": "DROP TABLE Customers;",
+  "scriptName": "drop.sql"
+}
+
+### Recent history
+GET {{server_HostAddress}}/api/analysis?take=25
+Accept: application/json
+
+###

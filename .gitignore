@@ -1,0 +1,32 @@
+# Build output
+[Bb]in/
+[Oo]bj/
+dist/
+*.user
+*.suo
+
+# .NET
+project.lock.json
+*.nupkg
+.vs/
+
+# Node / Angular
+node_modules/
+.angular/
+npm-debug.log*
+yarn-error.log*
+
+# Environments & secrets
+*.env
+appsettings.*.local.json
+secrets.json
+
+# IDE
+.idea/
+*.swp
+.DS_Store
+
+# Test results
+[Tt]est[Rr]esults/
+*.trx
+coverage/
