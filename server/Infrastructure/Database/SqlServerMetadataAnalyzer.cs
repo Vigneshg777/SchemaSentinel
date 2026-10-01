@@ -326,12 +326,39 @@ public sealed class SqlServerMetadataAnalyzer : IDatabaseMetadataAnalyzer
     }
 
     private async Task<SqlConnection> OpenAsync(CancellationToken cancellationToken)
+{
+    const int maxAttempts = 3;
+
+    for (var attempt = 1; attempt <= maxAttempts; attempt++)
     {
         var connection = new SqlConnection(_connectionString);
-        await connection.OpenAsync(cancellationToken);
-        return connection;
+
+        try
+        {
+            await connection.OpenAsync(cancellationToken);
+            return connection;
+        }
+        catch (SqlException ex) when (attempt < maxAttempts)
+        {
+            await connection.DisposeAsync();
+
+            _logger.LogWarning(
+                ex,
+                "Failed to connect to target database on attempt {Attempt}/{MaxAttempts}. Retrying...",
+                attempt,
+                maxAttempts);
+
+            await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
+        }
+        catch
+        {
+            await connection.DisposeAsync();
+            throw;
+        }
     }
 
+    throw new InvalidOperationException("Unable to connect to the target database.");
+}
     private static int? NormalizeLength(string dataType, short rawMaxLength)
     {
         if (rawMaxLength == -1)
