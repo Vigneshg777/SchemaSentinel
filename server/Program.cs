@@ -21,7 +21,15 @@ builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 builder.Services.AddDbContext<SchemaSentinelDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("SchemaSentinelDb")));
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("SchemaSentinelDb"),
+        sqlOptions =>
+        {
+            sqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 5,
+                maxRetryDelay: TimeSpan.FromSeconds(10),
+                errorNumbersToAdd: null);
+        }));
 
 // Parsing, database analysis and orchestration.
 builder.Services.AddSingleton<IMigrationParser, ScriptDomMigrationParser>();
