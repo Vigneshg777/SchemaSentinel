@@ -56,9 +56,10 @@ app.UseExceptionHandler();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-
-    // Ensure the history database exists for local development.
-    using var scope = app.Services.CreateScope();
+}
+// Apply EF Core migrations in every environment.
+using (var scope = app.Services.CreateScope())
+{
     var db = scope.ServiceProvider.GetRequiredService<SchemaSentinelDbContext>();
     await db.Database.MigrateAsync();
 }
